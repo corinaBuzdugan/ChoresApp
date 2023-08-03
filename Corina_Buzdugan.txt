@@ -1,0 +1,10 @@
+Chores app for children:
+
+•  Parents will create an account and username for their child;
+
+•  user wil create their own tasks or choose from a list of common chores;
+
+•  user/parent can track progress and completion of each task;
+
+•  user can earn points, badges, and prizes for doing chores;
+
