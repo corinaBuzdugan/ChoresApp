@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+			    http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>all</artifactId>
+        <version>1.6.2</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.sun.mail</groupId>
+    <artifactId>javax.mail</artifactId>
+    <packaging>jar</packaging>
+    <name>JavaMail API</name>
+
+    <properties>
+        <mail.extensionName>
+            javax.mail
+        </mail.extensionName>
+        <mail.moduleName>
+            java.mail
+        </mail.moduleName>
+        <mail.specificationTitle>
+            JavaMail(TM) API Design Specification
+        </mail.specificationTitle>
+        <mail.implementationTitle>
+            javax.mail
+        </mail.implementationTitle>
+        <!--suppress UnresolvedMavenProperty -->
+        <mail.packages.export>
+            javax.mail.*; version=${mail.spec.version},
+            com.sun.mail.imap; version=${mail.osgiversion},
+            com.sun.mail.imap.protocol; version=${mail.osgiversion},
+            com.sun.mail.iap; version=${mail.osgiversion},
+            com.sun.mail.pop3; version=${mail.osgiversion},
+            com.sun.mail.smtp; version=${mail.osgiversion},
+            com.sun.mail.util; version=${mail.osgiversion},
+            com.sun.mail.util.logging; version=${mail.osgiversion},
+            com.sun.mail.handlers; version=${mail.osgiversion}
+        </mail.packages.export>
+        <mail.probeFile>
+            META-INF/gfprobe-provider.xml
+        </mail.probeFile>
+        <findbugs.skip>
+            false
+        </findbugs.skip>
+        <findbugs.exclude>
+            ${project.basedir}/exclude.xml
+        </findbugs.exclude>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>1.7</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-compile</id>
+                                <configuration>
+                                    <excludes>
+                                        <exclude>
+                                            javax/mail/MailSessionDefinition.java
+                                        </exclude>
+                                        <exclude>
+                                            javax/mail/MailSessionDefinitions.java
+                                        </exclude>
+                                        <exclude>
+                                            module-info.java
+                                        </exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
+        <profile>
+            <id>9</id>
+            <activation>
+                <jdk>9</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-compile</id>
+                                <configuration>
+                                    <release combine.self="override"></release>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <compilerArgs>
+                        <arg>-Xlint</arg>
+                        <arg>-Xlint:-options</arg>
+                        <arg>-Xlint:-path</arg>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <excludes>
+                        <exclude>
+                            module-info.java
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*TestSuite.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>
+                                ${mail.moduleName}
+                            </Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+            <optional>true</optional>
+        </dependency>
+        <!-- JavaMail API -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+
+        <!-- PostgreSQL JDBC Driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.24</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+</project>
