@@ -1,9 +1,9 @@
 package org.example;
 
 public class ChildAccount {
-    private String username;
-    private String password;
-    private int parentId;
+    private final String username;
+    private final String password;
+    private final int parentId;
 
     public ChildAccount(String username, String password, int parentId) {
         this.username = username;
