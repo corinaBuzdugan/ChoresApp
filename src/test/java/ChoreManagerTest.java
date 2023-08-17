@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ChoreManagerTest {
     private ChoreManager choreManager;
@@ -23,7 +24,7 @@ public class ChoreManagerTest {
 
         // Check if the custom chore is available in the chore manager
         HashMap<String, Integer> availableChores = choreManager.getAvailableChores();
-        assertEquals(true, availableChores.containsKey(customChoreName));
+        assertTrue(availableChores.containsKey(customChoreName));
         assertEquals(customChorePoints, availableChores.get(customChoreName));
     }
 

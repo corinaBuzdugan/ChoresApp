@@ -1,8 +1,8 @@
 package org.example;
+
 import java.util.Scanner;
 
-public class AppLauncher {
-    public static void main(String[] args) {
+public class AppLauncher {public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         // Get parent's email and password to create the UserAccountManager
@@ -11,22 +11,34 @@ public class AppLauncher {
         System.out.println("Let`s get you started!\n");
         System.out.print("Enter parent's email: ");
         String parentEmail = scanner.nextLine();
+
         System.out.print("Enter parent's password: ");
         String parentPassword = scanner.nextLine();
 
-        UserAccountManager userAccountManager = new UserAccountManager(parentEmail, parentPassword);
-
-        // Get child's nickname/username and password to create the ChildAccount
         System.out.print("Enter child's nickname/username: ");
         String childUsername = scanner.nextLine();
+
         System.out.print("Enter child's password: ");
         String childPassword = scanner.nextLine();
 
-// Create ChildAccount and add it to the UserAccountManager
-        ChildAccount childAccount = userAccountManager.addChildAccount(childUsername, childPassword, userAccountManager.getParentId());
+        UserAccountManager userAccountManager = new UserAccountManager(parentEmail, parentPassword);
+        int parentId = userAccountManager.getParentId();
 
-        if (childAccount != null) {
-            System.out.println("Child account created successfully.");
+        if (parentId != -1) {
+            ChildAccount childAccount = userAccountManager.addChildAccount(childUsername, childPassword, parentId);
+            if (childAccount != null) {
+                System.out.println("Child account created successfully!");
+            } else {
+                System.out.println("Failed to create child account.");
+                scanner.close();
+                return;
+            }
+        } else {
+            System.out.println("Parent account not found.");
+            scanner.close();
+            return;
+        }
+
 
             // Create ChoreManager and add predefined chores
             ChoreManager choreManager = new ChoreManager();
@@ -109,10 +121,8 @@ public class AppLauncher {
 
             System.out.println("\nThank you for using the Chores App. Goodbye!");
             scanner.close();
-        } else {
-            System.out.println("Failed to create child account.");
         }
-    }
+
 
     private static void sendWeeklyReportToParent(String parentEmail, WeeklyReport weeklyReport) {
         EmailManager emailManager = new EmailManager("your_sender_email@example.com", "your_sender_password");

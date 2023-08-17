@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class ChoreManager {
-    private HashMap<String, Integer> predefinedChores;
+    private final HashMap<String, Integer> predefinedChores;
 
     public ChoreManager() {
         predefinedChores = new HashMap<>();

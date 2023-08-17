@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeeklyReport {
-    private List<DailyScore> dailyScores;
+    private final List<DailyScore> dailyScores;
     private int totalWeeklyScore;
 
     public WeeklyReport() {

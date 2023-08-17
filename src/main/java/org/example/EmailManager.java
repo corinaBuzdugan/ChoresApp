@@ -11,8 +11,8 @@ import javax.mail.internet.MimeMultipart;
 import java.util.Properties;
 
 public class EmailManager {
-    private String senderEmail;
-    private String senderPassword;
+    private final String senderEmail;
+    private final String senderPassword;
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final int SMTP_PORT = 587;
 
@@ -42,9 +42,8 @@ public class EmailManager {
             message.setSubject("Weekly Report for Your Child's Chores");
 
             // Use the provided reportContent variable for the email content
-            String content = reportContent;
 
-            message.setText(content);
+            message.setText(reportContent);
 
             Transport.send(message);
 

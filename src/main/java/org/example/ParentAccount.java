@@ -28,58 +28,55 @@ public class ParentAccount {
     }
 
     // Method to create a new parent account
-    public boolean createAccount() throws SQLException {
-        Connection connection = DatabaseManager.getConnection();
-        try {
+    public boolean createAccount() {
+        try (Connection connection = DatabaseConnection.getConnection()) {
             String checkQuery = "SELECT * FROM parents WHERE email = ?";
-            PreparedStatement checkStatement = connection.prepareStatement(checkQuery);
-            checkStatement.setString(1, email);
-            ResultSet checkResult = checkStatement.executeQuery();
+            try (PreparedStatement checkStatement = connection.prepareStatement(checkQuery)) {
+                checkStatement.setString(1, email);
+                ResultSet checkResult = checkStatement.executeQuery();
 
-            if (checkResult.next()) {
-                // Email already exists, can't create an account
-                return false;
-            } else {
-                String insertQuery = "INSERT INTO parents (email, password) VALUES (?, ?)";
-                PreparedStatement insertStatement = connection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
-                insertStatement.setString(1, email);
-                insertStatement.setString(2, password);
-                int affectedRows = insertStatement.executeUpdate();
+                if (checkResult.next()) {
+                    // Email already exists, can't create an account
+                    return false;
+                } else {
+                    String insertQuery = "INSERT INTO parents (email, password) VALUES (?, ?)";
+                    try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                        insertStatement.setString(1, email);
+                        insertStatement.setString(2, password);
+                        int affectedRows = insertStatement.executeUpdate();
 
-                if (affectedRows > 0) {
-                    ResultSet generatedKeys = insertStatement.getGeneratedKeys();
-                    if (generatedKeys.next()) {
-                        id = generatedKeys.getInt(1); // Get the generated parent ID
+                        if (affectedRows > 0) {
+                            ResultSet generatedKeys = insertStatement.getGeneratedKeys();
+                            if (generatedKeys.next()) {
+                                id = generatedKeys.getInt(1); // Get the generated parent ID
+                            }
+                            return true;
+                        }
                     }
-                    return true;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            DatabaseManager.closeConnection(connection);
         }
         return false;
     }
 
     // Method to log in a parent account
-    public boolean login() throws SQLException {
-        Connection connection = DatabaseManager.getConnection();
-        try {
+    public boolean login() {
+        try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "SELECT * FROM parents WHERE email = ? AND password = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, email);
-            statement.setString(2, password);
-            ResultSet result = statement.executeQuery();
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, email);
+                statement.setString(2, password);
+                ResultSet result = statement.executeQuery();
 
-            if (result.next()) {
-                id = result.getInt("id");
-                return true; // Parent account found and logged in
+                if (result.next()) {
+                    id = result.getInt("id");
+                    return true; // Parent account found and logged in
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            DatabaseManager.closeConnection(connection);
         }
         return false; // Login failed
     }

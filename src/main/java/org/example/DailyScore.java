@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DailyScore {
-    private List<Chore> completedChores;
+    private final List<Chore> completedChores;
     private int totalScore;
 
     public DailyScore() {

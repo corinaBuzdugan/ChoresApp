@@ -1,9 +1,9 @@
 package org.example;
 
 public class Chore {
-    private String name;
-    private String description;
-    private int points;
+    private final String name;
+    private final String description;
+    private final int points;
 
     public Chore(String name, String description, int points) {
         this.name = name;

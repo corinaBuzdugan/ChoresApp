@@ -1,25 +1,26 @@
 package org.example;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
 
 public class UserAccountManager {
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432/chores_db";
-    private static final String DB_USER = "postgres";
-    private static final String DB_PASSWORD = "Pr1ngl3s";
-
     private String parentEmail;
     private String parentPassword;
+    private int parentId;
+    private HashMap<String, ChildAccount> childAccounts;
 
     public UserAccountManager(String parentEmail, String parentPassword) {
         this.parentEmail = parentEmail;
         this.parentPassword = parentPassword;
+        this.parentId = -1;
+        this.childAccounts = new HashMap<>();
     }
 
     public boolean createParentAccount(String email, String password) {
-        Connection connection = null;
-        try {
-            connection = getConnection();
-
+        try (Connection connection = DatabaseConnection.getConnection()) {
             if (emailExists(connection, email)) {
                 return false; // Email already exists, can't create an account
             } else {
@@ -28,17 +29,13 @@ public class UserAccountManager {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection(connection);
         }
         return false;
     }
 
     public int getParentId() {
-        Connection connection = null;
         int parentId = -1; // Default value if not found
-        try {
-            connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "SELECT id FROM parents WHERE email = ?";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, parentEmail);
@@ -49,53 +46,31 @@ public class UserAccountManager {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection(connection);
         }
         return parentId;
     }
 
-    public boolean createChildAccount(String username, String password, int parentId) {
-        Connection connection = null;
-        try {
-            connection = getConnection();
-
-            if (usernameExists(connection, username)) {
-                return false; // Username already exists, can't create an account
-            } else {
-                insertChildAccount(connection, username, password, parentId);
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeConnection(connection);
-        }
-        return false;
+    public ChildAccount addChildAccount(String username, String password, int parentId) {
+        // Create and add a child account to the childAccounts map
+        ChildAccount childAccount = new ChildAccount(username, password, parentId);
+        childAccounts.put(username, childAccount);
+        return childAccount;
     }
 
     public boolean loginParent(String email, String password) {
-        Connection connection = null;
-        try {
-            connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection()) {
             return parentLoginSuccessful(connection, email, password);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection(connection);
         }
         return false;
     }
 
     public boolean loginChild(String username, String password) {
-        Connection connection = null;
-        try {
-            connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection()) {
             return childLoginSuccessful(connection, username, password);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection(connection);
         }
         return false;
     }
@@ -155,38 +130,5 @@ public class UserAccountManager {
             ResultSet result = statement.executeQuery();
             return result.next();
         }
-    }
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-    }
-
-    private void closeConnection(Connection connection) {
-        try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public ChildAccount addChildAccount(String childUsername, String childPassword, int parentId) {
-        Connection connection = null;
-        try {
-            connection = getConnection();
-
-            if (usernameExists(connection, childUsername)) {
-                return null; // Username already exists, can't create an account
-            } else {
-                insertChildAccount(connection, childUsername, childPassword, parentId);
-                return new ChildAccount(childUsername, childPassword, parentId);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeConnection(connection);
-        }
-        return null;
     }
 }
